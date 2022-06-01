@@ -1,0 +1,13 @@
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+[*.{yaml,yml,js,ts,tsx,scss,css,html,yaml.dist,yml.dist}]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+indent_style = tab

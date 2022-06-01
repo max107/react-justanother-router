@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "es6",
+      "es2015",
+      "dom"
+    ],
+    "types": [
+      "node",
+      "jest"
+    ],
+    "declaration": true,
+    "jsx": "react",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true
+  },
+  "exclude": [
+    "lib",
+    "node_modules",
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts"
+  ],
+  "include": [
+    "src"
+  ]
+}

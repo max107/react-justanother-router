@@ -1,0 +1,5 @@
+/node_modules
+/dist
+.idea
+.gitlab-ci.yml
+yarn.lock

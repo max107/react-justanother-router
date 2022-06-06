@@ -1,6 +1,6 @@
 import React, { createElement, StrictMode } from 'react';
 import { createBrowserHistory, Link, Redirect, RendererFunction, Route, RouterComponent, RouterEngine } from "../src";
-import { render } from "react-dom";
+import { createRoot } from 'react-dom/client';
 
 export type RouteProps = {
   auth?: boolean
@@ -16,6 +16,9 @@ export const routes: Route<RouteProps>[] = [
       <>
         <Header/>
         <div>homepage</div>
+        <div>
+          <Link to='signin'>Go to signin page</Link>
+        </div>
         <div>
           <Link to='secure'>Go to secure page</Link>
         </div>
@@ -65,14 +68,11 @@ export const Root = (): JSX.Element => (
 );
 
 const rootNode = document.getElementById('root');
-const useStrict = false;
-if (rootNode) {
-  // https://github.com/facebook/react/issues/15074
-  render(useStrict ? (
-    <StrictMode>
-      <Root/>
-    </StrictMode>
-  ) : (
+const root = createRoot(rootNode!);
+root.render(process.env.NODE_ENV === 'production' ? (
+  <Root/>
+) : (
+  <StrictMode>
     <Root/>
-  ), rootNode);
-}
+  </StrictMode>
+));

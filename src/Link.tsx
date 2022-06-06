@@ -1,8 +1,5 @@
-import { RouterEngineInterface } from "./routing";
 import React, { FC, HTMLProps, MouseEvent, PropsWithChildren, useCallback } from "react";
-import { useCoreRouter, useHistory } from "./hook";
-import { History, parsePath } from './history';
-import { RedirectProps } from "./Redirect";
+import { RedirectProps, useRouter } from ".";
 
 export type LinkProps = RedirectProps & {
   className?: string
@@ -17,37 +14,34 @@ export const Link: FC<PropsWithChildren<LinkProps>> = ({
   onClick,
   ...rest
 }): JSX.Element => {
-  const router: RouterEngineInterface = useCoreRouter();
-  const history: History = useHistory();
+  const { urlFor, redirectTo } = useRouter();
 
-  const url = to.indexOf('/') > -1 ? to : router.urlFor(to, params, query);
-
-  const handleClick = useCallback((event: MouseEvent<HTMLElement>): void => {
+  const handleClick = useCallback((e: MouseEvent<HTMLElement>): void => {
     // ignores the navigation when clicked using right mouse button or
     // by holding a special modifier key: ctrl, command, win, alt, shift
-    if (event) {
+    if (e) {
       if (
-        event.ctrlKey ||
-        event.metaKey ||
-        event.altKey ||
-        event.shiftKey ||
-        event.button !== 0
+        e.ctrlKey ||
+        e.metaKey ||
+        e.altKey ||
+        e.shiftKey ||
+        e.button !== 0
       ) {
         return;
       }
 
-      event.preventDefault();
+      e.preventDefault();
     }
 
     if (onClick) {
-      onClick && onClick(event);
+      onClick && onClick(e);
     }
 
-    history.push(parsePath(url));
-  }, [onClick, url]);
+    redirectTo(to, params, query);
+  }, [onClick, to, params, query]);
 
   return (
-    <a {...rest} onClick={handleClick} href={url}>
+    <a {...rest} onClick={handleClick} href={urlFor(to, params, query)}>
       {children}
     </a>
   );

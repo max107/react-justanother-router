@@ -1,22 +1,28 @@
 import React, { FC, useLayoutEffect } from "react";
-import { RouterHelper, useRouter } from "./hook";
+import { useRouter } from "./context";
 
 export type RedirectProps = {
   to: string
   params?: object
   query?: object
+  replace?: boolean
 }
 
 export const Redirect: FC<RedirectProps> = ({
   to,
   params,
   query,
+  replace,
 }): null => {
-  const router: RouterHelper = useRouter();
+  const { replaceTo, redirectTo } = useRouter();
 
-  useLayoutEffect((): void => {
-    router.redirectTo(to, params, query);
-  }, [to, params, query]);
+  useLayoutEffect(() => {
+    if (replace) {
+      replaceTo(to, params, query);
+    } else {
+      redirectTo(to, params, query);
+    }
+  }, [to, params, query, replace]);
 
   return null;
 };

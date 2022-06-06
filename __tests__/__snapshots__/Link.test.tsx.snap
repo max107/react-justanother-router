@@ -1,10 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`renders without error 1`] = `
-<a
-  href="/foobar"
-  onClick={[Function]}
->
-  foo-bar
-</a>
+Array [
+  <div>
+    homepage
+  </div>,
+  <a
+    href="/foobar"
+    onClick={[Function]}
+  >
+    foo-bar
+  </a>,
+]
 `;

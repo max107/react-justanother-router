@@ -1,27 +1,8 @@
-import { buildUri, cleanPath, copyLocation, locationToString, splitUri } from "../src/utils";
-import { Location, Route } from "../src";
-
-test('copyLocation', async () => {
-  const defaultLocation: Location = {
-    key: 'bar',
-    hash: 'foo',
-    state: { a: true },
-    pathname: 'b',
-    search: '?c=1'
-  }
-  const loc: Location = copyLocation(defaultLocation);
-  expect(loc).toEqual({
-    key: '',
-    hash: '',
-    state: { a: true },
-    pathname: 'b',
-    search: '?c=1'
-  });
-});
+import { buildUri, cleanPath, locationToString, splitUri } from "../src";
+import { Location } from "../src";
 
 test('locationToString', async () => {
   const defaultLocation: Location = {
-    key: 'bar',
     hash: 'foo',
     state: {},
     pathname: 'b',

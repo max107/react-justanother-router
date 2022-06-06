@@ -1,6 +1,6 @@
 /**
  * An entry in a history stack. A location contains information about the
- * URL path, as well as possibly some arbitrary state and a key.
+ * URL path, as well as possibly some arbitrary state.
  *
  * @see https://github.com/ReactTraining/history/tree/master/docs/api-reference.md#location
  */
@@ -11,16 +11,6 @@ export interface Location<S extends State = State> extends Path {
    * @see https://github.com/ReactTraining/history/tree/master/docs/api-reference.md#location.state
    */
   state: S;
-
-  /**
-   * A unique string associated with this location. May be used to safely store
-   * and retrieve data in some other storage API, like `localStorage`.
-   *
-   * Note: This value is always "default" on the initial location.
-   *
-   * @see https://github.com/ReactTraining/history/tree/master/docs/api-reference.md#location.key
-   */
-  key: Key;
 }
 
 /**
@@ -33,16 +23,6 @@ export interface PartialLocation<S extends State = State> extends PartialPath {
    * @see https://github.com/ReactTraining/history/tree/master/docs/api-reference.md#location.state
    */
   state?: S;
-
-  /**
-   * A unique string associated with this location. May be used to safely store
-   * and retrieve data in some other storage API, like `localStorage`.
-   *
-   * Note: This value is always "default" on the initial location.
-   *
-   * @see https://github.com/ReactTraining/history/tree/master/docs/api-reference.md#location.key
-   */
-  key?: Key;
 }
 
 /**
@@ -206,14 +186,6 @@ export enum Action {
  * @see https://github.com/ReactTraining/history/tree/master/docs/api-reference.md#location.state
  */
 export type State = object | null;
-
-/**
- * A unique string associated with a location. May be used to safely store
- * and retrieve data in some other storage API, like `localStorage`.
- *
- * @see https://github.com/ReactTraining/history/tree/master/docs/api-reference.md#location.key
- */
-export type Key = string;
 
 /**
  * The pathname, search, and hash values of a URL.

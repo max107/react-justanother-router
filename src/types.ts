@@ -1,23 +1,35 @@
 import { MatchFunction as RegexMatchFunction, Token } from "path-to-regexp";
-import { RouteMatch } from "./routing";
+import { RouteMatch, RouterEngineInterface, History } from ".";
 
-export type RendererFunction<T = any> = (match: RouteMatch<T>) => JSX.Element | null;
+export type DynamicProps<T = any> = {
+  props?: any;
+} | {
+  props?: T;
+}
 
 export type RouteRenderFunction = any;
 
-export type CompiledRoute = {
+export type CompiledRoute<T = any> = DynamicProps<T> & {
   name?: string
   path: string
   render: RouteRenderFunction
-  props: any,
   route: {
     match: RegexMatchFunction
     tokens: Token[]
   }
+};
+
+export type MatchFunction<T extends any> = (uri: string) => RouteMatch<T> | null;
+
+export type RouterProps<T = any> = {
+  renderer: RendererFunction<T>;
 }
 
-export type MatchFunction = (uri: string) => RouteMatch | null;
+export type RouterProviderProps<T = any> = RouterProps<T> & {
+  router: RouterEngineInterface;
+  history: History;
+}
 
-export type UrlForFunction = (name: string, params?: object, query?: object) => string;
+export type RendererFunction<T = any> = (match: RouteMatch<T>) => JSX.Element | null;
 
-export type RouteProps = any;
+export type Unlisten = undefined | (() => void);

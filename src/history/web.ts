@@ -14,7 +14,10 @@ const PopStateEventType = 'popstate';
 export type BrowserHistoryOptions = { window?: Window };
 
 export const createBrowserHistory = (options: BrowserHistoryOptions = {}): BrowserHistory => {
-  const { window = document.defaultView! } = options;
+  const {
+    window = document.defaultView!
+  } = options;
+
   const globalHistory = window.history;
 
   function getIndexAndLocation(): [number, Location] {
@@ -27,7 +30,6 @@ export const createBrowserHistory = (options: BrowserHistoryOptions = {}): Brows
         search,
         hash,
         state: state.usr || null,
-        key: state.key || 'default',
       },
     ];
   }
@@ -53,7 +55,6 @@ export const createBrowserHistory = (options: BrowserHistoryOptions = {}): Brows
     return [
       {
         usr: nextLocation.state,
-        key: nextLocation.key,
         idx: index,
       },
       createHref(nextLocation),
@@ -121,5 +122,5 @@ export const createBrowserHistory = (options: BrowserHistoryOptions = {}): Brows
     listen(listener) {
       return listeners.push(listener);
     },
-  } as BrowserHistory;
+  };
 };

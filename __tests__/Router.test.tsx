@@ -6,12 +6,12 @@ import {
   createMemoryHistory,
   History,
   Location,
+  Redirect,
   RendererFunction,
   RouteMatch,
   Router,
   RouterEngine,
   RouterEngineInterface,
-  RouterProvider,
   Update
 } from "../src";
 
@@ -51,9 +51,7 @@ test('render', async () => {
 
   expect(locations.length).toEqual(0);
   const { getByTestId, asFragment } = render(
-    <RouterProvider history={history} router={router}>
-      <Router renderer={renderer}/>
-    </RouterProvider>
+    <Router history={history} router={router} renderer={renderer}/>
   );
   const listNode = await waitFor(() => getByTestId('list'));
   expect(listNode.children).toHaveLength(1);
@@ -71,21 +69,57 @@ test('render_initial', async () => {
     initialEntries: [
       {
         hash: '',
-        key: '',
         pathname: '/nested/foobar',
         search: '',
       }
     ]
   });
   const { getByTestId, asFragment } = render(
-    <RouterProvider history={history} router={router}>
-      <Router renderer={renderer}/>
-    </RouterProvider>
+    <Router history={history} router={router} renderer={renderer}/>
   );
   const listNode = await waitFor(() => getByTestId('child'));
   expect(listNode.children).toHaveLength(1);
   expect(asFragment()).toMatchSnapshot();
   expect(listNode).toHaveTextContent('nested-foo-bar');
+});
+
+test('render_redirect', async () => {
+  const router: RouterEngineInterface = new RouterEngine([
+    { path: '/track/create', name: 'track_create', props: { auth: true }, render: () => <div>track_create</div> },
+    { path: '/auth/login', name: 'auth_login', render: () => <div>auth_login</div> },
+  ]);
+
+  const renderer: RendererFunction<{ auth?: boolean }> = (match): JSX.Element | null => {
+    if (match.props?.auth) {
+      return (
+        <div data-testid="redirect">
+          <Redirect to='auth_login'/>
+        </div>
+      );
+    }
+
+    return (
+      <div data-testid="login">
+        {createElement(match.render, { params: match.params, query: match.query })}
+      </div>
+    );
+  }
+
+  const history: History = createMemoryHistory({
+    initialEntries: [
+      {
+        hash: '',
+        pathname: '/track/create',
+        search: '',
+      }
+    ]
+  });
+  const { getByTestId, asFragment } = render(
+    <Router history={history} router={router} renderer={renderer}/>
+  );
+  const loginNode = await waitFor(() => getByTestId('login'));
+  expect(asFragment()).toMatchSnapshot();
+  expect(loginNode).toHaveTextContent('auth_login');
 });
 
 test('render_child', async () => {
@@ -97,9 +131,7 @@ test('render_child', async () => {
 
   expect(locations.length).toEqual(0);
   const { getByTestId, asFragment } = render(
-    <RouterProvider history={history} router={router}>
-      <Router renderer={renderer}/>
-    </RouterProvider>
+    <Router history={history} router={router} renderer={renderer}/>
   );
   const homepageRoute = await waitFor(() => getByTestId('child'));
   expect(homepageRoute.children).toHaveLength(1);
@@ -125,9 +157,7 @@ test('render_nested', async () => {
 
   expect(locations.length).toEqual(0);
   const { getByTestId, asFragment } = render(
-    <RouterProvider history={history} router={router}>
-      <Router renderer={renderer}/>
-    </RouterProvider>
+    <Router history={history} router={router} renderer={renderer}/>
   );
 
   act(() => {
@@ -158,9 +188,7 @@ test('render_notfound', async () => {
 
   expect(locations.length).toEqual(0);
   const { getByTestId, asFragment } = render(
-    <RouterProvider history={history} router={router}>
-      <Router renderer={renderer}/>
-    </RouterProvider>
+    <Router history={history} router={router} renderer={renderer}/>
   );
 
   act(() => {
@@ -208,9 +236,7 @@ test('render_layout', async () => {
 
   expect(locations.length).toEqual(0);
   const { getByTestId, asFragment } = render(
-    <RouterProvider history={history} router={router}>
-      <Router renderer={renderer}/>
-    </RouterProvider>
+    <Router history={history} router={router} renderer={renderer}/>
   );
 
   act(() => {

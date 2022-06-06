@@ -1,86 +1,84 @@
 import { match, Match, parse, Token, } from "path-to-regexp";
 import { buildFrom, cleanPath, splitUri, UriPart, } from "./utils";
-import { CompiledRoute, MatchFunction, RouteProps, RouteRenderFunction, UrlForFunction } from "./types";
+import { CompiledRoute, DynamicProps, MatchFunction, RouteRenderFunction, UrlForFunction } from ".";
 
-export const buildRoutes = (routes: Route[], parentUri = '/'): CompiledRoute[] => {
-  const result: CompiledRoute[] = [];
+export function buildRoutes<T = any>(routes: Route<T>[], parentUri = '/'): CompiledRoute<T>[] {
+  const result: CompiledRoute<T>[] = [];
 
   for (let i = 0; i < routes.length; i++) {
-    const { children, ...route }: Route = routes[i];
+    const { children, ...route } = routes[i];
 
     const path = route.path
       ? cleanPath([parentUri, route.path || ''].join('/'))
       : parentUri;
 
     if (Array.isArray(children) && children.length > 0) {
-      result.push(...buildRoutes(children, path));
+      result.push(...buildRoutes<T>(children, path));
     }
 
     if (route.render) {
-      result.push({
-        name: route.name,
-        render: route.render,
+      const { name, render, props } = route;
+
+      const target: CompiledRoute<T> = {
+        name,
+        render,
         path,
-        props: route.props || {},
+        props,
         route: {
           match: match(path),
           tokens: parse(path).slice(1),
         }
-      });
+      };
+
+      result.push(target);
     }
   }
 
   return result;
-};
+}
 
-export type Route = {
+// type RoutePart<T = any> = {
+//   name?: string
+//   path?: string
+//   props?: any;
+// };
+
+export type Route<T = any> = DynamicProps<T> & {
   name?: string
   path?: string
-  props?: RouteProps
   render?: RouteRenderFunction
-  children?: Route[]
-}
+  children?: Route<T>[]
+};
 
-export type RouteMatchQ<T = {}> = {
-  props: T;
-  render?: any // Function
+export type RouteMatch<T = any> = DynamicProps<T> & {
   name?: string
+  path?: string
+  render?: any // Function
   params: object
   query: object
-}
+};
 
-export type RouteMatch<T = any> = {
-  render?: any // Function
-  name?: string
-  params: object
-  query: object
-} & (T extends undefined ? {
-  props: {},
-} : {
-  props: T;
-})
-
-export interface RouterEngineInterface {
-  match: MatchFunction;
+export interface RouterEngineInterface<T = any> {
+  match: MatchFunction<T>;
   urlFor: UrlForFunction;
 }
 
-export class RouterEngine implements RouterEngineInterface {
-  private readonly routes: CompiledRoute[] = [];
+export class RouterEngine<T = any> implements RouterEngineInterface<T> {
+  private readonly routes: CompiledRoute<T>[] = [];
 
   /**
    * @param routes
    */
-  constructor(routes: Route[]) {
+  constructor(routes: Route<T>[]) {
     this.routes = buildRoutes(routes);
   }
 
   /**
    * @param uri
    */
-  match(uri: string): RouteMatch | null {
+  match(uri: string): RouteMatch<T> | null {
     for (let i = 0; i < this.routes.length; i++) {
-      const route: CompiledRoute = this.routes[i];
+      const route: CompiledRoute<T> = this.routes[i];
       const parts: UriPart = splitUri(uri);
       const result: Match = route.route.match(parts.uri);
 
@@ -98,14 +96,14 @@ export class RouterEngine implements RouterEngineInterface {
     return null;
   }
 
-  getRoutes(): CompiledRoute[] {
+  getRoutes(): CompiledRoute<T>[] {
     return this.routes;
   }
 
   /**
    * @param name
    */
-  private findRoute(name: string): CompiledRoute | null {
+  private findRoute(name: string): CompiledRoute<T> | null {
     for (let i = 0; i < this.routes.length; i++) {
       if (this.routes[i].name === name) {
         return this.routes[i];
@@ -135,7 +133,7 @@ export class RouterEngine implements RouterEngineInterface {
   }
 
   urlFor<P extends object>(name: string, params?: P, query?: object): string {
-    const route: CompiledRoute | null = this.findRoute(name);
+    const route: CompiledRoute<T> | null = this.findRoute(name);
     if (null === route) {
       throw new Error(`route ${name} not found`);
     }

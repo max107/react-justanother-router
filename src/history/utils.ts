@@ -20,7 +20,7 @@ export function createEvents<F extends Function>(): Events<F> {
     },
     push(fn: F) {
       handlers.push(fn);
-      return function() {
+      return function () {
         handlers = handlers.filter(handler => handler !== fn);
       };
     },
@@ -30,38 +30,34 @@ export function createEvents<F extends Function>(): Events<F> {
   };
 }
 
-export const createKey = () => Math.random()
-  .toString(36)
-  .substr(2, 8);
-
 /**
  * Creates a string URL path from the given pathname, search, and hash components.
  *
  * @see https://github.com/ReactTraining/history/tree/master/docs/api-reference.md#createpath
  */
-export const createPath = ({ pathname = '/', search = '', hash = '' }: PartialPath) => {
-  return pathname + search + hash;
-};
+export const createPath = ({ pathname = '/', search = '', hash = '' }: PartialPath): string => (
+  pathname + search + hash
+);
 
 /**
  * Parses a string URL path into its separate pathname, search, and hash components.
  *
  * @see https://github.com/ReactTraining/history/tree/master/docs/api-reference.md#parsepath
  */
-export const parsePath = (path: string) => {
+export const parsePath = (path: string): PartialPath => {
   const partialPath: PartialPath = {};
 
   if (path) {
     const hashIndex = path.indexOf('#');
     if (hashIndex >= 0) {
-      partialPath.hash = path.substr(hashIndex);
-      path = path.substr(0, hashIndex);
+      partialPath.hash = path.substring(hashIndex);
+      path = path.substring(0, hashIndex);
     }
 
     const searchIndex = path.indexOf('?');
     if (searchIndex >= 0) {
-      partialPath.search = path.substr(searchIndex);
-      path = path.substr(0, searchIndex);
+      partialPath.search = path.substring(searchIndex);
+      path = path.substring(0, searchIndex);
     }
 
     if (path) {
@@ -80,7 +76,9 @@ export const parsePath = (path: string) => {
 export const warning = (cond: boolean, message: string) => {
   if (!cond) {
     // eslint-disable-next-line no-console
-    if (typeof console !== 'undefined') { console.warn(message); }
+    if (typeof console !== 'undefined') {
+      console.warn(message);
+    }
 
     try {
       // Welcome to debugging history!
@@ -97,11 +95,8 @@ export const warning = (cond: boolean, message: string) => {
 
 export const createHref = (to: To) => typeof to === 'string' ? to : createPath(to);
 
-export const getNextLocation = (location: Location, to: To, state: State = null): Location => {
-  return {
-    ...location,
-    ...(typeof to === 'string' ? parsePath(to) : to),
-    state,
-    key: createKey(),
-  };
-};
+export const getNextLocation = (location: Location, to: To, state: State = null): Location => ({
+  ...location,
+  ...(typeof to === 'string' ? parsePath(to) : to),
+  state,
+});

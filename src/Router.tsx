@@ -1,47 +1,32 @@
-import React, { FC, useEffect, useLayoutEffect, useState } from "react";
-import { RouteMatch, RouterEngineInterface } from "./routing";
-import { History, Location, Update } from "./history";
-import { useCoreRouter, useHistory } from "./hook";
-import { RendererFunction } from "./types";
-import { copyLocation, locationToString } from "./utils";
+import React, { FC, PropsWithChildren, useEffect, useState } from "react";
+import { createContextValue, Location, RouterContext, RouterProviderProps, Unlisten, Update } from ".";
+import { RouterRender } from "./RouterRender";
 
-export const match = (
-  uri: string,
-  router: RouterEngineInterface,
-  renderer: RendererFunction,
-): any => {
-  const route: RouteMatch | null = router.match(uri);
-  if (route === null) {
-    return null;
-  }
-
-  return renderer(route);
-};
-
-type RouterProps<T = any> = {
-  renderer: RendererFunction<T>;
-}
-
-export const Router: FC<RouterProps> = ({
+export const Router: FC<PropsWithChildren<RouterProviderProps>> = ({
+  router,
+  history,
+  children,
   renderer,
 }): JSX.Element | null => {
-  const history: History = useHistory();
-  const router: RouterEngineInterface = useCoreRouter();
+  let unlisten: Unlisten = undefined;
 
-  const [location, setLocation] = useState<Location>(
-    copyLocation(history.location)
-  );
-  const [component, setComponent] = useState<JSX.Element | null>(
-    match(locationToString(location), router, renderer)
-  );
+  const [location, setLocation] = useState<Location>(() => {
+    // ugly hook: emulate component will mount
+    unlisten = history.listen(({ location }: Update) => {
+      setLocation(location);
+    });
 
-  useLayoutEffect(() => history.listen(({ location }: Update): void => {
-    setLocation(copyLocation(location));
-  }), [location]);
+    return history.location;
+  });
 
   useEffect(() => {
-    setComponent(match(locationToString(location), router, renderer));
-  }, [location]);
+    return () => unlisten && unlisten();
+  }, []);
 
-  return component;
+  return (
+    <RouterContext.Provider value={createContextValue(history, router)}>
+      <RouterRender router={router} renderer={renderer} location={location}/>
+      {children}
+    </RouterContext.Provider>
+  );
 };

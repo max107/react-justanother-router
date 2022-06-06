@@ -100,3 +100,15 @@ exports[`render_notfound 1`] = `
   </div>
 </DocumentFragment>
 `;
+
+exports[`render_redirect 1`] = `
+<DocumentFragment>
+  <div
+    data-testid="login"
+  >
+    <div>
+      auth_login
+    </div>
+  </div>
+</DocumentFragment>
+`;

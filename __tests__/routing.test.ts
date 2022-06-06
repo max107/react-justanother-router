@@ -97,7 +97,6 @@ test('buildRoutes', async () => {
       name: 'child1',
       path: '/blog/:post_id',
       render: expect.any(Function),
-      props: {},
       route: {
         match: expect.any(Function),
         tokens: [

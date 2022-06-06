@@ -1,5 +1,5 @@
 import { Action, History, Listener, Location, PartialLocation, State, To } from "./types";
-import { clamp, createEvents, createHref, createKey, getNextLocation, parsePath, warning } from "./utils";
+import { clamp, createEvents, createHref, getNextLocation, parsePath, warning } from "./utils";
 
 /**
  * A memory history stores locations in memory. This is useful in stateful
@@ -37,7 +37,6 @@ export const createMemoryHistory = (options: MemoryHistoryOptions = {}): MemoryH
       search: '',
       hash: '',
       state: null,
-      key: createKey(),
       ...(typeof entry === 'string' ? parsePath(entry) : entry),
     };
 

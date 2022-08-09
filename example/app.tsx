@@ -1,23 +1,39 @@
-import React, { createElement, StrictMode } from 'react';
+import { createElement, StrictMode } from 'react';
 import { createBrowserHistory, Link, Redirect, RendererFunction, Route, RouterComponent, RouterEngine } from "../src";
 import { createRoot } from 'react-dom/client';
+import './app.css';
 
 export type RouteProps = {
   auth?: boolean
 }
 
 const Header = () => <Link to='homepage'>Homepage</Link>
+const Debug = ({ params, query }) => (
+  <div>
+    <hr/>
+    <div>Debug:</div>
+    <div></div>
+    <div>Params: {JSON.stringify(params)}</div>
+    <div>Query: {JSON.stringify(query)}</div>
+  </div>
+)
 
 export const routes: Route<RouteProps>[] = [
   {
     name: 'homepage',
     path: '/',
-    render: () => (
-      <>
+    render: ({ params, query }) => (
+      <div className='b-app'>
         <Header/>
         <div>homepage</div>
         <div>
           <Link to='signin'>Go to signin page</Link>
+        </div>
+        <div>
+          <Link to='signin' query={{ foo: 'bar' }}>Go to signin page with query</Link>
+        </div>
+        <div>
+          <Link to='user_view' params={{ id: 1 }}>Go to user #1</Link>
         </div>
         <div>
           <Link to='secure'>Go to secure page</Link>
@@ -25,28 +41,42 @@ export const routes: Route<RouteProps>[] = [
         <div>
           <a href='#' onClick={() => window.location.pathname = '/secure'}>Force to secure page</a>
         </div>
-      </>
+        <Debug params={params} query={query} />
+      </div>
     )
   },
   {
     path: '/secure',
     name: 'secure',
     props: { auth: true },
-    render: () => (
-      <>
+    render: ({ params, query }) => (
+      <div className='b-app'>
         <Header/>
         <div>secure</div>
-      </>
+        <Debug params={params} query={query} />
+      </div>
     )
   },
   {
     path: '/signin',
     name: 'signin',
-    render: () => (
-      <>
+    render: ({ params, query }) => (
+      <div className='b-app'>
         <Header/>
         <div>signin</div>
-      </>
+        <Debug params={params} query={query} />
+      </div>
+    )
+  },
+  {
+    path: '/user/:id',
+    name: 'user_view',
+    render: ({ params, query }) => (
+      <div className='b-app'>
+        <Header/>
+        <div>User view: {params.id}</div>
+        <Debug params={params} query={query} />
+      </div>
     )
   },
 ];

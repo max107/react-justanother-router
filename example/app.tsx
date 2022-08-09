@@ -1,14 +1,19 @@
-import { createElement, StrictMode } from 'react';
+import React, { createElement, FC, StrictMode } from 'react';
 import { createBrowserHistory, Link, Redirect, RendererFunction, Route, RouterComponent, RouterEngine } from "../src";
 import { createRoot } from 'react-dom/client';
 import './app.css';
 
 export type RouteProps = {
   auth?: boolean
-}
+} & DebugProps
 
 const Header = () => <Link to='homepage'>Homepage</Link>
-const Debug = ({ params, query }) => (
+
+type DebugProps = {
+  params: any
+  query: any
+}
+const Debug: FC<DebugProps> = ({ params, query }) => (
   <div>
     <hr/>
     <div>Debug:</div>
@@ -22,7 +27,7 @@ export const routes: Route<RouteProps>[] = [
   {
     name: 'homepage',
     path: '/',
-    render: ({ params, query }) => (
+    render: ({ params, query }: DebugProps) => (
       <div className='b-app'>
         <Header/>
         <div>homepage</div>
@@ -49,7 +54,7 @@ export const routes: Route<RouteProps>[] = [
     path: '/secure',
     name: 'secure',
     props: { auth: true },
-    render: ({ params, query }) => (
+    render: ({ params, query }: DebugProps) => (
       <div className='b-app'>
         <Header/>
         <div>secure</div>
@@ -60,7 +65,7 @@ export const routes: Route<RouteProps>[] = [
   {
     path: '/signin',
     name: 'signin',
-    render: ({ params, query }) => (
+    render: ({ params, query }: DebugProps) => (
       <div className='b-app'>
         <Header/>
         <div>signin</div>
@@ -69,9 +74,9 @@ export const routes: Route<RouteProps>[] = [
     )
   },
   {
-    path: '/user/:id',
+    path: '/user/:id(\\d+)',
     name: 'user_view',
-    render: ({ params, query }) => (
+    render: ({ params, query }: DebugProps) => (
       <div className='b-app'>
         <Header/>
         <div>User view: {params.id}</div>

@@ -1,22 +1,20 @@
 import React, { FC, HTMLProps, MouseEvent, PropsWithChildren, useCallback } from "react";
-import { RedirectProps, useRouter } from ".";
+import { RedirectProps, useNavigate } from ".";
 
-export type LinkProps = RedirectProps & {
-  className?: string
-  onClick?: any
-} & HTMLProps<HTMLAnchorElement>
+export type LinkProps = RedirectProps & HTMLProps<HTMLAnchorElement>
 
 export const Link: FC<PropsWithChildren<LinkProps>> = ({
   to,
   params = {},
   query = {},
   children,
+  replace,
   onClick,
   ...rest
 }): JSX.Element => {
-  const { urlFor, redirectTo } = useRouter();
+  const { urlFor, navigate } = useNavigate();
 
-  const handleClick = useCallback((e: MouseEvent<HTMLElement>): void => {
+  const handleClick = useCallback((e: MouseEvent<HTMLAnchorElement>): void => {
     // ignores the navigation when clicked using right mouse button or
     // by holding a special modifier key: ctrl, command, win, alt, shift
     if (e) {
@@ -34,11 +32,11 @@ export const Link: FC<PropsWithChildren<LinkProps>> = ({
     }
 
     if (onClick) {
-      onClick && onClick(e);
+      onClick(e);
     }
 
-    redirectTo(to, params, query);
-  }, [onClick, to, params, query]);
+    navigate(to, params, query, replace);
+  }, [onClick, to, params, query, replace]);
 
   return (
     <a {...rest} onClick={handleClick} href={urlFor(to, params, query)}>

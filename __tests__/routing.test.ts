@@ -4,19 +4,19 @@ const routes = [
   {
     path: '/list',
     name: 'list',
-    render: () => null,
+    component: () => null,
     props: {},
   },
   {
     path: '/view/:id',
     name: 'view',
-    render: () => null,
+    component: () => null,
     props: {},
   },
   {
     path: '/view_strict/:id(\\d+)',
     name: 'view_strict',
-    render: () => null,
+    component: () => null,
     props: {},
   },
 ];
@@ -42,7 +42,7 @@ test('routing_match', async () => {
     query: {
       foo: 'bar',
     },
-    render: expect.any(Function)
+    component: expect.any(Function)
   });
   expect(router.match('/view/1?foo=bar')).toEqual({
     name: 'view',
@@ -53,7 +53,7 @@ test('routing_match', async () => {
     query: {
       foo: 'bar',
     },
-    render: expect.any(Function)
+    component: expect.any(Function)
   });
   expect(router.match('/view/null?foo=bar')).toEqual({
     name: 'view',
@@ -64,7 +64,7 @@ test('routing_match', async () => {
     query: {
       foo: 'bar',
     },
-    render: expect.any(Function)
+    component: expect.any(Function)
   });
   expect(router.match('/view_strict/1?foo=bar')).toEqual({
     name: 'view_strict',
@@ -75,7 +75,7 @@ test('routing_match', async () => {
     query: {
       foo: 'bar',
     },
-    render: expect.any(Function)
+    component: expect.any(Function)
   });
   expect(router.match('/view_strict/null?foo=bar')).toEqual(null);
 });
@@ -86,7 +86,7 @@ test('buildRoutes', async () => {
       name: 'parent',
       path: '/blog',
       children: [
-        { name: 'child1', path: '/:post_id', render: () => null }
+        { name: 'child1', path: '/:post_id', component: () => null }
       ]
     }
   ];
@@ -96,7 +96,7 @@ test('buildRoutes', async () => {
     expect.objectContaining({
       name: 'child1',
       path: '/blog/:post_id',
-      render: expect.any(Function),
+      component: expect.any(Function),
       route: {
         match: expect.any(Function),
         tokens: [

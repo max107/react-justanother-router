@@ -1,43 +1,31 @@
-import React from "react";
-import { createElement } from "react";
-import { create } from 'react-test-renderer';
+import '@testing-library/jest-dom';
+import * as React from "react";
 import {
-  createMemoryHistory,
+  createHistory,
   History,
-  Location,
+  HistoryLocation,
   Redirect,
   RendererFunction,
   Router,
   RouterEngine,
   RouterEngineInterface,
-  Update
 } from "../src";
+import { render } from "@testing-library/react";
 
-let locations: Location[] = [];
+test('Redirect', async () => {
+  const locations: HistoryLocation[] = [];
+  const history: History = createHistory();
+  history.listen((location) => locations.push(location));
 
-const history: History = createMemoryHistory({
-  initialEntries: [{ pathname: '/' }]
-});
-history.listen(({ location }: Update) => {
-  locations.push(location);
-});
-
-const router: RouterEngineInterface = new RouterEngine([
-  { path: '/', name: 'homepage', render: () => <Redirect to='foo-bar'/> },
-  { path: '/foobar', name: 'foo-bar', render: () => <div data-testid="foo-bar">foo-bar</div> },
-]);
-
-afterEach(() => {
-  locations = [];
-});
-
-test('renders without error', async () => {
   expect(locations.length).toEqual(0);
-  const renderer: RendererFunction = ({ render, ...rest }): JSX.Element | null => createElement(render, rest);
-  const tree = create(
+  const renderer: RendererFunction = ({ component, ...rest }) => React.createElement(component, rest);
+  const router: RouterEngineInterface = new RouterEngine([
+    { name: 'homepage', path: '/', component: () => <Redirect to='foobar'/> },
+    { name: 'foobar', path: '/foobar', component: () => <div>hey</div> },
+  ]);
+  render(
     <Router history={history} router={router} renderer={renderer}/>
   );
-  expect(tree.toJSON()).toMatchSnapshot();
+  expect(history.location.pathname).toBe('/foobar');
   expect(locations.length).toEqual(1);
-  expect(locations.pop()?.pathname).toEqual('/foobar');
 });

@@ -1,8 +1,6 @@
 import qs from "qs";
-import { History, PartialPath } from "./history";
 import { compile } from "path-to-regexp";
-import { RouterEngineInterface } from "./routing";
-import { RouterContextValue } from "./context";
+import { HistoryLocation } from "./history";
 
 /**
  * Clean path by stripping subsequent "//"'s. Without this
@@ -21,8 +19,8 @@ export function buildFrom<P extends object>(path: string, params?: P, query?: ob
   return buildUri(compile<P>(path)(params), query);
 }
 
-export type UriPart = {
-  uri: string
+export type ParsedHistoryLocation = {
+  pathname: string
   search: object
 }
 
@@ -30,41 +28,22 @@ export type UriPart = {
  * Parse uri string into string before ? and search object after ?
  * @param uri
  */
-export const splitUri = (uri: string): UriPart => {
+export const splitUri = (uri: string): ParsedHistoryLocation => {
   const parts: string[] = uri.split('?').filter((f: string) => f);
 
   return {
-    uri: parts.length > 0 ? parts[0] : '',
+    pathname: parts.length > 0 ? parts[0] : '',
     search: qs.parse(parts[1] ? parts[1] : ''),
   };
 };
 
-export const locationIsEqual = (a: PartialPath, b: PartialPath): boolean => (
+export const locationIsEqual = (a: HistoryLocation, b: HistoryLocation) => (
   a.search === b.search &&
   a.pathname === b.pathname &&
   a.hash === b.hash
 );
 
-export const locationToString = ({ pathname, search }: PartialPath): string => [
+export const locationToString = ({ pathname, search }: HistoryLocation): string => [
   pathname,
   search ? search.substring(1) : ''
 ].filter((t) => t).join("?");
-
-export const createHelpers = (history: History, router: RouterEngineInterface) => ({
-  redirectTo: (route: string, params?: object, query?: object): void => {
-    history.push(router.urlFor(route, params, query));
-  },
-  replaceTo: (route: string, params?: object, query?: object): void => {
-    history.replace(router.urlFor(route, params, query));
-  },
-  urlFor: (route: string, params?: object, query?: object): string => (
-    route.indexOf('/') > -1 ? route : router.urlFor(route, params, query)
-  ),
-})
-
-export const createContextValue = (history: History, router: RouterEngineInterface): RouterContextValue => ({
-  history,
-  router: router,
-  location: history.location,
-  ...createHelpers(history, router),
-})

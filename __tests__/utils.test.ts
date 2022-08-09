@@ -1,10 +1,8 @@
-import { buildUri, cleanPath, locationToString, splitUri } from "../src";
-import { Location } from "../src";
+import { buildUri, cleanPath, HistoryLocation, locationToString, splitUri } from "../src";
 
 test('locationToString', async () => {
-  const defaultLocation: Location = {
+  const defaultLocation: HistoryLocation = {
     hash: 'foo',
-    state: {},
     pathname: 'b',
     search: '?c=1'
   }
@@ -18,11 +16,11 @@ test('buildUri', async () => {
 
 test('splitUri', async () => {
   expect(splitUri('b')).toEqual({
-    uri: 'b',
+    pathname: 'b',
     search: {},
   });
   expect(splitUri('b?c=1&a=')).toEqual({
-    uri: 'b',
+    pathname: 'b',
     search: {
       a: '',
       c: '1',

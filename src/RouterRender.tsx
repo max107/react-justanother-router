@@ -1,11 +1,13 @@
 import React, { FC } from "react";
-import { locationToString, PartialPath, RouterEngineInterface, RouterProps } from ".";
+import { locationToString, RouterEngineInterface, RouterProps } from ".";
+import { useLocation } from "./useLocation";
 
-export const RouterRender: FC<RouterProps & { location: PartialPath, router: RouterEngineInterface }> = ({
+export const RouterRender: FC<RouterProps & { router: RouterEngineInterface }> = ({
   renderer,
   router,
-  location,
-}): JSX.Element | null => {
+}) => {
+  const location = useLocation();
+
   const route = router.match(locationToString(location));
   if (route === null) {
     return null;

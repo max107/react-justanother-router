@@ -1,6 +1,6 @@
 {
   "name": "react-justanother-router",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
@@ -14,17 +14,17 @@
     "qs": "^6.11.0"
   },
   "devDependencies": {
-    "vite": "^3.0.4",
     "@babel/core": "^7.18.10",
     "@babel/preset-env": "^7.18.10",
     "@babel/preset-typescript": "^7.18.6",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^28.1.6",
     "@types/node": "^18.6.5",
     "@types/qs": "^6.9.7",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
     "@types/react-test-renderer": "^18.0.0",
     "@vitejs/plugin-react": "^2.0.0",
     "babel-jest": "^28.1.3",
@@ -33,11 +33,12 @@
     "react-test-renderer": "^18.2.0",
     "ts-jest": "^28.0.7",
     "ts-node": "^10.9.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "vite": "^3.0.4"
   },
   "peerDependencies": {
-    "react": "^17 | ^18",
-    "react-dom": "^17 | ^18"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "babel": {
     "presets": [

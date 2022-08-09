@@ -1,6 +1,27 @@
-import { match, Match, parse, Token, } from "path-to-regexp";
-import { buildFrom, cleanPath, splitUri, UriPart, } from "./utils";
-import { CompiledRoute, DynamicProps, MatchFunction, RouteRenderFunction, UrlForFunction } from ".";
+import { match, Match, MatchFunction as RegexMatchFunction, parse, Token, } from "path-to-regexp";
+import { buildFrom, cleanPath, ParsedHistoryLocation, splitUri, } from "./utils";
+
+export type UrlForFunction = (name: string, params?: object, query?: object) => string;
+
+export type MatchFunction<T extends any> = (uri: string) => RouteMatch<T> | null;
+
+export type RouteRenderFunction = any;
+
+export type DynamicProps<T = any> = {
+  props?: any;
+} | {
+  props?: T;
+}
+
+export type CompiledRoute<T = any> = DynamicProps<T> & {
+  name?: string
+  path: string
+  component: RouteRenderFunction
+  route: {
+    match: RegexMatchFunction
+    tokens: Token[]
+  }
+};
 
 export function buildRoutes<T = any>(routes: Route<T>[], parentUri = '/'): CompiledRoute<T>[] {
   const result: CompiledRoute<T>[] = [];
@@ -16,12 +37,12 @@ export function buildRoutes<T = any>(routes: Route<T>[], parentUri = '/'): Compi
       result.push(...buildRoutes<T>(children, path));
     }
 
-    if (route.render) {
-      const { name, render, props } = route;
+    if (route.component) {
+      const { name, component, props } = route;
 
       const target: CompiledRoute<T> = {
         name,
-        render,
+        component,
         path,
         props,
         route: {
@@ -37,23 +58,17 @@ export function buildRoutes<T = any>(routes: Route<T>[], parentUri = '/'): Compi
   return result;
 }
 
-// type RoutePart<T = any> = {
-//   name?: string
-//   path?: string
-//   props?: any;
-// };
-
 export type Route<T = any> = DynamicProps<T> & {
   name?: string
   path?: string
-  render?: RouteRenderFunction
+  component?: RouteRenderFunction
   children?: Route<T>[]
 };
 
 export type RouteMatch<T = any> = DynamicProps<T> & {
   name?: string
   path?: string
-  render?: any // Function
+  component?: any // Function
   params: object
   query: object
 };
@@ -79,13 +94,13 @@ export class RouterEngine<T = any> implements RouterEngineInterface<T> {
   match(uri: string): RouteMatch<T> | null {
     for (let i = 0; i < this.routes.length; i++) {
       const route: CompiledRoute<T> = this.routes[i];
-      const parts: UriPart = splitUri(uri);
-      const result: Match = route.route.match(parts.uri);
+      const parts: ParsedHistoryLocation = splitUri(uri);
+      const result: Match = route.route.match(parts.pathname);
 
       if (result) {
         return {
           name: route.name,
-          render: route.render,
+          component: route.component,
           params: result.params,
           query: parts.search,
           props: route.props,
@@ -113,11 +128,6 @@ export class RouterEngine<T = any> implements RouterEngineInterface<T> {
     return null;
   }
 
-  /**
-   * @param name
-   * @param tokens
-   * @param params
-   */
   private validate(name: string, tokens: Token[], params: object = {}): void {
     const parameterNames: (string | number)[] = Object.keys(params);
     const tokenNames: (string | number)[] = tokens
@@ -132,7 +142,7 @@ export class RouterEngine<T = any> implements RouterEngineInterface<T> {
     }
   }
 
-  urlFor<P extends object>(name: string, params?: P, query?: object): string {
+  urlFor<P extends object = {}>(name: string, params?: P, query?: object): string {
     const route: CompiledRoute<T> | null = this.findRoute(name);
     if (null === route) {
       throw new Error(`route ${name} not found`);

@@ -1,32 +1,29 @@
-import React, { FC, PropsWithChildren, useEffect, useState } from "react";
-import { createContextValue, Location, RouterContext, RouterProviderProps, Unlisten, Update } from ".";
+import React, { FC, PropsWithChildren } from "react";
+import { History, RouteMatch, RouterEngineInterface } from ".";
 import { RouterRender } from "./RouterRender";
+import { RouterContext } from "./useRouter";
+
+export type RendererFunction<T = any> = (match: RouteMatch<T>) => JSX.Element | null;
+
+export type RouterProps<T = any> = {
+  renderer: RendererFunction<T>;
+}
+
+export type RouterProviderProps<T = any> = RouterProps<T> & {
+  router: RouterEngineInterface;
+  history: History;
+}
 
 export const Router: FC<PropsWithChildren<RouterProviderProps>> = ({
   router,
   history,
   children,
   renderer,
-}): JSX.Element | null => {
-  let unlisten: Unlisten = undefined;
-
-  const [location, setLocation] = useState<Location>(() => {
-    // ugly hook: emulate component will mount
-    unlisten = history.listen(({ location }: Update) => {
-      setLocation(location);
-    });
-
-    return history.location;
-  });
-
-  useEffect(() => {
-    return () => unlisten && unlisten();
-  }, []);
-
+}) => {
   return (
-    <RouterContext.Provider value={createContextValue(history, router)}>
-      <RouterRender router={router} renderer={renderer} location={location}/>
+    <RouterContext.Provider value={{ history, router }}>
+      <RouterRender router={router} renderer={renderer}/>
       {children}
     </RouterContext.Provider>
   );
-};
+}

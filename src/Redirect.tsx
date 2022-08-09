@@ -1,5 +1,5 @@
 import React, { FC, useLayoutEffect } from "react";
-import { useRouter } from "./context";
+import { useNavigate } from "./useNavigate";
 
 export type RedirectProps = {
   to: string
@@ -14,14 +14,10 @@ export const Redirect: FC<RedirectProps> = ({
   query,
   replace,
 }): null => {
-  const { replaceTo, redirectTo } = useRouter();
+  const { navigate } = useNavigate();
 
   useLayoutEffect(() => {
-    if (replace) {
-      replaceTo(to, params, query);
-    } else {
-      redirectTo(to, params, query);
-    }
+    navigate(to, params, query, replace);
   }, [to, params, query, replace]);
 
   return null;

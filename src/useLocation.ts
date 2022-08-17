@@ -11,7 +11,6 @@ export const useLocation = (): HistoryLocation => {
     if (locationIsEqual(location, newLocation)) {
       return;
     }
-    console.log({ newLocation });
     setLocation(newLocation);
   }), [location]);
 

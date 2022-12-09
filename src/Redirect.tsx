@@ -1,4 +1,4 @@
-import React, { FC, useLayoutEffect } from "react";
+import React, { FC, useEffect } from "react";
 import { useNavigate } from "./useNavigate";
 
 export type RedirectProps = {
@@ -16,7 +16,7 @@ export const Redirect: FC<RedirectProps> = ({
 }): null => {
   const { navigate } = useNavigate();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     navigate(to, params, query, replace);
   }, [to, params, query, replace]);
 

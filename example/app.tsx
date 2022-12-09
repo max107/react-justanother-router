@@ -1,4 +1,4 @@
-import { createElement, FC, StrictMode } from 'react';
+import React, { createElement, FC, StrictMode } from 'react';
 import { createHistory, Link, Redirect, RendererFunction, Route, Router, RouterEngine } from "../src";
 import { createRoot } from 'react-dom/client';
 import './reset.css';
@@ -45,6 +45,14 @@ const HomePage: FC<DebugProps> = ({
       <Link to='user_view' params={{ id: 1 }}>Go to user #1</Link>
     </div>
     <div>
+      <Link to='redirect'>Go to redirect page</Link>
+    </div>
+    <div>
+      <Link to='user_view' params={{ id: 1 }} target='_blank'>
+        Go to user #1 with _blank attribute
+      </Link>
+    </div>
+    <div>
       <Link to='secure'>Go to secure page</Link>
     </div>
     <div>
@@ -62,6 +70,14 @@ const HomePage: FC<DebugProps> = ({
     <Debug params={params} query={query}/>
   </div>
 )
+
+const RedirectPage: FC = () => {
+  console.log('redirect page');
+
+  return (
+    <Redirect to='homepage'/>
+  )
+}
 
 const SecurePage: FC<DebugProps> = ({
   params,
@@ -130,6 +146,7 @@ const ChildPage: FC<DebugProps> = ({
 
 export const routes: Route<RouteProps>[] = [
   { name: 'homepage', path: '/', component: HomePage },
+  { name: 'redirect', path: '/redirect', component: RedirectPage },
   { name: 'secure', path: '/secure', props: { auth: true }, component: SecurePage },
   { name: 'secure_no_auth', path: '/secure_no_auth', component: SecurePage },
   { name: 'secure_redirect', path: '/secure_redirect', component: SecureRedirectPage },

@@ -15,6 +15,7 @@ export const Link: FC<PropsWithChildren<LinkProps>> = ({
   const { urlFor, navigate } = useNavigate();
 
   const handleClick = useCallback((e: MouseEvent<HTMLAnchorElement>): void => {
+    console.log(e);
     // ignores the navigation when clicked using right mouse button or
     // by holding a special modifier key: ctrl, command, win, alt, shift
     if (e) {
@@ -35,7 +36,11 @@ export const Link: FC<PropsWithChildren<LinkProps>> = ({
       onClick(e);
     }
 
-    navigate(to, params, query, replace);
+    if (rest.target === '_blank') {
+      window?.open(urlFor(to, params, query), '_blank')?.focus();
+    } else {
+      navigate(to, params, query, replace);
+    }
   }, [onClick, to, params, query, replace]);
 
   return (

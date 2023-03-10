@@ -4,6 +4,7 @@ export * from './Link';
 export * from './Redirect';
 export * from './Router';
 export * from './history';
+export * from './historyStatic';
 export * from './historyEvents';
 export * from './routing';
 export * from './utils';

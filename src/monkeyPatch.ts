@@ -5,7 +5,7 @@
 // See https://stackoverflow.com/a/4585031
 import { eventPushState, eventReplaceState } from "./historyEvents";
 
-if (typeof window.history !== "undefined") {
+if (typeof window !== "undefined" && typeof window.history !== "undefined") {
   for (const type of [eventPushState, eventReplaceState]) {
     // @ts-ignore
     const original = window.history[type];

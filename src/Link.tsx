@@ -16,7 +16,6 @@ export const Link: FC<PropsWithChildren<LinkProps>> = ({
   const { urlFor, navigate } = useNavigate();
 
   const handleClick = useCallback((e: MouseEvent<HTMLAnchorElement>): void => {
-    console.log(e);
     // ignores the navigation when clicked using right mouse button or
     // by holding a special modifier key: ctrl, command, win, alt, shift
     if (e) {

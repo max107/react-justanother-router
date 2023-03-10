@@ -1,5 +1,5 @@
 import React, { FC, PropsWithChildren } from "react";
-import { History, RouteMatch, RouterEngineInterface } from ".";
+import { History, HistoryInterface, RouteMatch, RouterEngineInterface } from ".";
 import { RouterRender } from "./RouterRender";
 import { RouterContext } from "./useRouter";
 
@@ -11,7 +11,7 @@ export type RouterProps<T = any> = {
 
 export type RouterProviderProps<T = any> = RouterProps<T> & {
   router: RouterEngineInterface;
-  history: History;
+  history: HistoryInterface;
 }
 
 export const Router: FC<PropsWithChildren<RouterProviderProps>> = ({

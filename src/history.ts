@@ -6,7 +6,7 @@ export type HistoryLocation = {
   hash?: string;
 }
 
-type LocationCallback = {
+export type LocationCallback = {
   (location: HistoryLocation): void;
 }
 

@@ -10,6 +10,7 @@ export const Link: FC<PropsWithChildren<LinkProps>> = ({
   children,
   replace,
   onClick,
+  href,
   ...rest
 }): JSX.Element => {
   const { urlFor, navigate } = useNavigate();
@@ -44,7 +45,7 @@ export const Link: FC<PropsWithChildren<LinkProps>> = ({
   }, [onClick, to, params, query, replace]);
 
   return (
-    <a {...rest} onClick={handleClick} href={urlFor(to, params, query)}>
+    <a {...rest} onClick={handleClick} href={href || urlFor(to, params, query)}>
       {children}
     </a>
   );

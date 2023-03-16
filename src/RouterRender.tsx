@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { locationToString, RouterEngineInterface, RouterProps } from ".";
+import { CurrentRouteContext, locationToString, RouterEngineInterface, RouterProps } from ".";
 import { useLocation } from "./useLocation";
 
 export const RouterRender: FC<RouterProps & { router: RouterEngineInterface }> = ({
@@ -13,5 +13,11 @@ export const RouterRender: FC<RouterProps & { router: RouterEngineInterface }> =
     return null;
   }
 
-  return renderer(route);
+  const content = renderer(route);
+
+  return (
+    <CurrentRouteContext.Provider value={{ currentRoute: route }}>
+      {content}
+    </CurrentRouteContext.Provider>
+  )
 };

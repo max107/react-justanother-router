@@ -4,6 +4,7 @@ import { createElement, FC, PropsWithChildren } from "react";
 import { cleanup, render, waitFor } from '@testing-library/react';
 import {
   createHistory,
+  CurrentRouteContextValue,
   History,
   HistoryLocation,
   Redirect,
@@ -12,6 +13,7 @@ import {
   Router,
   RouterEngine,
   RouterEngineInterface,
+  useCurrentRoute,
 } from "../src";
 
 const router: RouterEngineInterface = new RouterEngine([
@@ -75,6 +77,47 @@ test('render_redirect', async () => {
     <Router history={history} router={router} renderer={renderer}/>
   );
   expect(history.location.pathname).toBe('/auth/login');
+});
+
+test('render_current_route', async () => {
+  window.history.pushState({}, '', '/user/hello?foo=bar');
+
+  const locations: HistoryLocation[] = [];
+  const history: History = createHistory();
+  history.listen((location) => locations.push(location));
+
+  let ctx: CurrentRouteContextValue | null | undefined;
+  const router: RouterEngineInterface = new RouterEngine([
+    {
+      path: '/user/:name',
+      name: 'user_view',
+      props: {
+        val: 1,
+      },
+      component: () => {
+        ctx = useCurrentRoute();
+        return null;
+      },
+    },
+  ]);
+
+  const renderer: RendererFunction<{ auth?: boolean }> = ({ component, props, ...rest }) => {
+    return createElement(component, rest);
+  }
+
+  render(
+    <Router history={history} router={router} renderer={renderer}/>
+  );
+  expect(ctx).not.toBeUndefined();
+
+  const { currentRoute } = ctx!;
+  expect(currentRoute.name).toBe('user_view');
+  expect(currentRoute.component).not.toBeUndefined();
+  expect(JSON.stringify(currentRoute.params)).toBe('{"name":"hello"}');
+  expect(JSON.stringify(currentRoute.query)).toBe('{"foo":"bar"}');
+  expect(JSON.stringify(currentRoute.props)).toBe('{"val":1}');
+
+  expect(history.location.pathname).toBe('/user/hello');
 });
 
 test('render_child', async () => {

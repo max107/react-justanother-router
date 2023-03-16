@@ -103,7 +103,7 @@ const SigninPage: FC<DebugProps> = ({
     <div>signin</div>
     <Debug params={params} query={query}/>
   </div>
-)
+);
 
 const WithQueryPage: FC<DebugProps> = ({
   params,

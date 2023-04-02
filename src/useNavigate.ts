@@ -15,7 +15,7 @@ export const useNavigate = () => {
     replace?: boolean,
     scrollToTop = true,
   ) => {
-    if (scrollToTop) {
+    if (scrollToTop && typeof window !== "undefined") {
       window.scrollTo({
         top: 0,
       });

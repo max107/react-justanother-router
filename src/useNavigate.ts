@@ -8,9 +8,20 @@ export const useNavigate = () => {
     route.indexOf('/') > -1 ? route : router.urlFor(route, params, query)
   ), [router]);
 
-  const navigate = useCallback((route: string, params?: object, query?: object, replace?: boolean) => {
+  const navigate = (
+    route: string,
+    params?: object,
+    query?: object,
+    replace?: boolean,
+    scrollToTop = true,
+  ) => {
+    if (scrollToTop && typeof window !== "undefined") {
+      window.scrollTo({
+        top: 0,
+      });
+    }
     history.navigate(urlFor(route, params, query), replace);
-  }, [history, urlFor]);
+  };
 
   return {
     navigate,
